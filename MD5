@@ -1,5 +1,6 @@
-937ac4c0b7e76837df276819540c1eb7 *DESCRIPTION
-fd490d146443fa9d0d5aef0dd01f90e5 *NAMESPACE
-60bd9b4466819c224a78a3f460cda47c *R/mvtsplot.R
+14be9e91e32aa90a3fb75cf378b9cfb0 *DESCRIPTION
+deebd09b5ca246570b7fe314c25ffcbf *NAMESPACE
+3f170c6eb2cb942aa7f856b17b9c99db *R/mvtsplot.R
+05f986113cbc0579633363de8743fa34 *README.md
 b93e44a795ff43ce0977f6e4eef5af3b *inst/doc/mvtsviz.pdf
-6eb7b19ac41c95bc05ca2a61f09e5b57 *man/mvtsplot.Rd
+878a0b9b30e92a070dd7016d77d648ea *man/mvtsplot.Rd
