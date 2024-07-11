@@ -1,23 +1,25 @@
 ################################################################################
 ## Copyright (C) 2008 Roger D. Peng <rpeng@jhsph.edu>
-## 
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ## 02110-1301, USA
 ################################################################################
 
-#' @importFrom graphics abline axis box image layout lines par plot points segments strwidth text Axis
+## library(splines)
+
+#' @importFrom graphics Axis image par axis box abline
 drawImage <- function(cx, pal, nlevels, xlim, xtime, group, gcol) {
         par(las = 1, cex.axis = 0.6)
         cn <- colnames(cx)
@@ -25,7 +27,7 @@ drawImage <- function(cx, pal, nlevels, xlim, xtime, group, gcol) {
         side2 <- 0.2
 
         ## Setup image plot
-        if(!is.null(cn)) 
+        if(!is.null(cn))
                 side2 <- max(side2, max(strwidth(cn, "inches")) + 0.1)
         else
                 cn <- as.character(1, nc)
@@ -44,6 +46,7 @@ drawImage <- function(cx, pal, nlevels, xlim, xtime, group, gcol) {
         }
 }
 
+#' @importFrom stats lm
 drawImageMargin <- function(cx, pal, nlevels, xlim, xtime, group,
                             gcol, smooth.df, rowm, nr, bottom.ylim, colm, right.xlim,
                             main) {
@@ -144,8 +147,7 @@ catcols <- function(x, levels, norm) {
 }
 
 ## Discretize a vector 'x' into categories defined by 'levels'.
-#
-#' @importFrom stats quantile
+
 categorize <- function(x, levels, jitter = TRUE) {
         ## 'x' is a vector; 'levels' is a single integer, or a vector
         ## of quantiles
@@ -181,15 +183,11 @@ reorderCols <- function(x, group) {
         x[, idx.reordered, drop = FALSE]
 }
 
-
-#' @importFrom stats complete.cases
 rangeby <- function(x, f) {
         use <- complete.cases(x, f)
         range(x[use])
 }
 
-#' @importFrom stats predict lm na.exclude
-#' @importFrom splines ns
 splineFillIn <- function(x, df) {
         if(all(is.na(x)))
                 return(x)
@@ -244,10 +242,11 @@ nalines <- function(x, y, NAcol = gray(0.6), ...) {
         invisible()
 }
 
+#' Plot Multivariate Time Series Data
+#'
+#' @description
 #' A function for plotting multivariate time series data
-#' 
-#' A function for plotting multivariate time series data
-#' 
+#'
 #' @param x a matrix of N rows and P columns, where P is the number of time series and N is the number of observations per series
 #' @param group a length N vector indicating group membership of each row of the matrix (optional)
 #' @param xtime a length N vector containing the time index (optional)
@@ -255,7 +254,7 @@ nalines <- function(x, y, NAcol = gray(0.6), ...) {
 #' @param levels number of levels for mapping categories into colors
 #' @param smooth.df the number of degrees of freedom to be used for the spline smoother
 #' @param margin should the margin plots be shown (default = TRUE)
-#' @param  sort a function computing a numerical statistic that can be used for ordering the rows (default is no sorting)
+#' @param sort a function computing a numerical statistic that can be used for ordering the rows (default is no sorting)
 #' @param main title for the plot
 #' @param palette name of the Color Brewer palette to be used
 #' @param rowstat a function computing a numerical statistic on the rows for displaying on the margin (default is \code{median})
@@ -263,18 +262,39 @@ nalines <- function(x, y, NAcol = gray(0.6), ...) {
 #' @param bottom.ylim y-axis limits for the bottom margin
 #' @param right.xlim x-axis limits for the right margin
 #' @param gcol color for lines separating groups
-#' 
-#' @details For the normalization, specifying "internal" means that each time series is categorized into colors based on the range of values in each time series individually. Therefore, under this scenario, the same color in two different time series will have two different meanings. If "global" is specified, then each time series will be categorized based on the range of values for the entire collection of time series. In this case, the colors are comparable across series.
 #'
-#' @importFrom RColorBrewer brewer.pal
+#' @details
+#' For the normalization, specifying "internal" means that each time series is categorized into colors based on the range of values in each time series individually. Therefore, under this scenario, the same color in two different time series will have two different meanings. If "global" is specified, then each time series will be categorized based on the range of values for the entire collection of time series. In this case, the colors are comparable across series.
+#'
+#' @references   Peng RD (2008). "A method for visualizing multivariate time series data," Journal of Statistical Software, 25 (Code Snippet), 1--17.
+#' @keywords graphics
+#' @import splines RColorBrewer
 #' @importFrom grDevices colorRampPalette gray
-#' @references Peng RD (2008). "A method for visualizing multivariate time series data," Journal of Statistical Software, 25 (Code Snippet), 1--17.
-#' @author Roger D. Peng \email{rpeng@jhsph.edu}
-#' @examples 
-#' x <- matrix(rnorm(2000), 100, 20)
-#' mvtsplot(x)
-#' 
+#' @importFrom  graphics abline axis box image layout lines par plot points segments strwidth text
+#' @importFrom stats complete.cases na.exclude predict quantile
+#'
 #' @export
+#' @examples
+#' library(mvtsplot)
+#'
+#' set.seed(971)
+#' x1 <- matrix(-0.005 * (1:200) + rnorm(200 * 10), 200, 10)
+#' x2 <- matrix(-0.005 * (1:200) + rnorm(200 * 10, mean = 2, sd = 2), 200, 10)
+#' x <- cbind(x1, x2)
+#' colnames(x) <- paste("X", 1:ncol(x))
+#' g <- gl(2, 10)
+#'
+#' ## Internal normalization
+#' mvtsplot(x, margin = FALSE, norm = "internal", group = g)
+#'
+#' ## Global normalization
+#' mvtsplot(x, margin = FALSE, norm = "global", group = g)
+#'
+#' ## Use margin plots
+#' mvtsplot(x, group = g, levels = 7)
+#'
+#'
+#'
 mvtsplot <- function(x, group = NULL, xtime = NULL,
                      norm = c("internal", "global"), levels = 3,
                      smooth.df = NULL, margin = TRUE,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mvtsplot.R
 \name{mvtsplot}
 \alias{mvtsplot}
-\title{A function for plotting multivariate time series data}
+\title{Plot Multivariate Time Series Data}
 \usage{
 mvtsplot(
   x,
@@ -60,13 +60,28 @@ A function for plotting multivariate time series data
 For the normalization, specifying "internal" means that each time series is categorized into colors based on the range of values in each time series individually. Therefore, under this scenario, the same color in two different time series will have two different meanings. If "global" is specified, then each time series will be categorized based on the range of values for the entire collection of time series. In this case, the colors are comparable across series.
 }
 \examples{
-x <- matrix(rnorm(2000), 100, 20)
-mvtsplot(x)
+library(mvtsplot)
+
+set.seed(971)
+x1 <- matrix(-0.005 * (1:200) + rnorm(200 * 10), 200, 10)
+x2 <- matrix(-0.005 * (1:200) + rnorm(200 * 10, mean = 2, sd = 2), 200, 10)
+x <- cbind(x1, x2)
+colnames(x) <- paste("X", 1:ncol(x))
+g <- gl(2, 10)
+
+## Internal normalization
+mvtsplot(x, margin = FALSE, norm = "internal", group = g)
+
+## Global normalization
+mvtsplot(x, margin = FALSE, norm = "global", group = g)
+
+## Use margin plots
+mvtsplot(x, group = g, levels = 7)
+
+
 
 }
 \references{
 Peng RD (2008). "A method for visualizing multivariate time series data," Journal of Statistical Software, 25 (Code Snippet), 1--17.
 }
-\author{
-Roger D. Peng \email{rpeng@jhsph.edu}
-}
+\keyword{graphics}
